@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+      <meta name="theme-color" content="#C4B31A" />
+
+    <title>Colegio Estudio - Boletín académico</title>
+  
+    <link rel="icon" type="image/png" href="https://cdn.phidias.es/interface/xhtml/favicon.png" />
+  <link rel="shortcut icon" href="https://cdn.phidias.es/interface/xhtml/favicon.png" />
+  
+  
+  <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.phidias.es/interface/xhtml/index-vue.css?20230726-2" />
+  <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.phidias.es/interface/xhtml/index-box.css?20230818" />
+
+          
+  <style>
+    :root {
+      --phidias-box-color: #C4B31A;
+      --phidias-box-image: url(https://cdn.phidias.es/interface/xhtml/./img/login-background.jpg);
+    }
+  </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" media="screen" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" />
+<link rel="stylesheet" href="https://cdn.phidias.es/interface/xhtml/lib/style.css?20240610" />
+
+<script type="text/javascript">
+  /*
+  Funcion global para hacer scroll hacia el elemento activo del menu de navegacion
+  Busca el elemento con clase MenuLink--active y hace scrollIntoView
+  */
+  function scrollToActiveMenuItem() {
+    /*
+    Determinar si estamos en vista desktop o en vista movil.
+    ver: https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
+    */
+    const isDesktop = !!document.querySelector('#phidias_sidebar')?.offsetParent
+
+    const menuActiveItem = isDesktop
+      ? document.querySelector('#phidias_sidebar .MenuLink--active') // desktop
+      : document.querySelector('#phidias_toolbar_mobile_container .MenuLink--active') // mobile
+
+    if (!menuActiveItem) {
+      return
+    }
+
+    menuActiveItem.scrollIntoView({
+      block: "center",
+      inline: "nearest"
+    })
+  }
+
+
+  const PhidiasApp = {
+    url: "https://estudio.api.phidias.es/",
+    language: "es_ES",
+    timezone: "Europe/Madrid",
+    token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBsaWNhdGlvbiI6InYzIiwiaWQiOiJndWVzdCIsInR5cGUiOiJuby1lcXVpdiJ9.yLsyz3B9zpSGKZZQR3T9v-HYgM4dXfLi5YOWgLDJ18A",
+      }
+</script>
+
+<script src="https://cdn.phidias.es/interface/xhtml/lib/phidias-pwa.umd.js?20240610"></script>
+
+<script>
+  const PhidiasI18n = PWA.i18n.provideI18n({
+    language: PhidiasApp.language,
+    fallbackLanguage: 'en',
+    currency: 'cop', //default currency
+    timeZone: "Europe/Madrid",
+    languages: {
+   es: 'Español (LA)',   es_ES: 'Español (ES)',   en: 'English',    ca: 'Català',    gl: 'Gallego',    it: 'Italiano',    fr: 'Français',    de: 'Deutsch',    pt: 'Português', }, // Available language list
+  });
+  PhidiasI18n.updateDictionary(PhidiasApp.language, ({}))
+
+  function createPhidiasApp(options) {
+    return PWA.Vue.createApp({
+      ...options,
+      setup(props, context) {
+
+        PWA.api.provideClient('core', {
+          baseURL: 'https://estudio.phidias.es/',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+
+        PWA.api.provideClient('phi', {
+          baseURL: 'https://phi.co'
+        })
+
+                  PWA.api.provideClient('v4', {
+            baseURL: "https://estudio.api.phidias.es/",
+            token: PhidiasApp.token
+          })
+        
+        if (options.setup) {
+          return options.setup(props, context)
+        }
+      }
+    })
+  }
+</script>
+	<style type="text/css" >
+		
+body {
+  --ui-color-primary: #C4B31A;
+  --ui-color-z1: #ededed;
+}
+
+/* !!! fix weird position bug.  #branches has an inline width set dynamically which is f'd when page takes long to load */
+#branches {
+  min-width: 70vw;
+}
+
+.UiDataTable {
+  max-height: 70vh;
+}
+
+fieldset .CmsBlock.UiInput {
+  margin: 0 0.25rem;
+  /* margin-bottom: 1.6rem; */
+  margin: 1rem 0.25rem;
+}
+
+fieldset .CmsBlock.UiInput--type-text {
+  flex: 1;
+}
+
+#pwa *,
+.UiWindow * {
+  box-sizing: border-box;
+}
+
+#pwa fieldset,
+.pwa-container fieldset,
+div[data-tippy-root] fieldset,
+.UiDialog__contents fieldset,
+.UiWindow fieldset {
+  background: rgba(0,0,0, 0.02);
+  max-width: 650px;
+  padding: 50px 12px 12px 12px;
+}
+
+#pwa fieldset legend,
+.pwa-container fieldset legend,
+div[data-tippy-root] fieldset legend,
+.UiDialog__contents fieldset legend,
+.UiWindow fieldset legend {
+  font-size: 1em;
+  padding: 0 16px;
+}
+
+.UiInputUrl__input {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+		</style>
+	<style type="text/css" >
+		
+.phidias_privacy {
+  padding: 12px;
+}
+
+		</style>
+	<style type="text/css" >
+		
+/* OCULTAR EL MENU DE PRIVACIDAD DEL DROPDOWN (!) */
+.phidias_toolbar_dropdown .UiDialog {
+  display: none;
+}
+
+#phidias_box_footer {
+  margin: 36px 0;
+  text-align: center;
+}
+
+#phidias_box_footer .UiDialog {
+  display: inline-block;
+  margin: auto;
+}
+
+#phidias_box_footer .UiItem {
+  --ui-item-padding: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#phidias_box_footer .UiItem:hover {
+  background-color: var(--ui-color-hover);
+}
+
+		</style>
+</head>
+
+<body>
+  <div id="phidias_box">
+    <div id="phidias_box_left" class="scroll">
+      <div id="phidias_box_top">
+        <ui-input
+          class="phidias_language_picker"
+          type="select-native"
+          :model-value="currentLanguage"
+          @update:model-value="setLanguage"
+          :options="availableLanguages"
+        ></ui-input>
+      </div>
+      <script>
+      createPhidiasApp({
+        components: {
+          UiInput: PWA.ui.UiInput
+        },
+        setup() {
+          const i18n = PWA.i18n.useI18n()
+          const configuredLanguages = ({
+   es: 'Español (LA)',   es_ES: 'Español (ES)',   en: 'English',    ca: 'Català',    gl: 'Gallego',    it: 'Italiano',    fr: 'Français',    de: 'Deutsch',    pt: 'Português', })
+          const availableLanguages = Object.keys(configuredLanguages).map(k => ({ value: k, text: configuredLanguages[k] }))
+          return {
+            availableLanguages,
+            currentLanguage: i18n.language,
+            setLanguage: function(lang) {
+              window.location = 'https://estudio.phidias.es/language/change?to='+lang
+            }
+          }
+        }
+      }).mount('#phidias_box_top')
+      </script>
+
+      <div align="center">
+        <img id="phidias_box_logo" src ="https://estudio.phidias.es/interface/xhtml/./img/label.png" />
+      </div>
+
+      <div id="phidias_box_contents">
+            
+
+<script>
+    var lcount = 0;
+    function checksubmit(event) {
+        lcount++;
+        if (lcount >= 5) {
+            event.stopPropagation();
+            event.preventDefault();
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<style>
+    .description_login {
+        max-width: 650px;
+        margin: 15px auto;
+    }
+    .disclaimer {
+        margin-top:30px
+    }
+
+    .disclaimer a {
+      color: #C4B31A;
+      text-decoration: underline;
+    }
+</style>
+
+<div id="phidias_warning_cf7ae2cfdaae1e01b02a02aeba4a589a" class=" phidias_warning_align--center">
+  <div class="phidias_warning phidias_warning--warn" v-if="validationCookie">
+
+    <div class="phidias_warning__left " @click="goTo('')">
+      <ui-icon class="icon-left" src= "mdi:alert-outline"></ui-icon>
+      <span v-html="content"></span>
+    </div>
+
+        <ui-icon class="icon-close" src= "mdi:close" @click="actionClose('warning_d41d8cd98f00b204e9800998ecf8427e')"></ui-icon>  </div>
+</div>
+
+<script>
+  createPhidiasApp({
+    components: {
+      UiIcon: PWA.ui.UiIcon
+    },
+    setup() {
+      const content = "";
+      const showWarning = PWA.Vue.ref(true);
+
+      const actionClose = (elemHash) => {
+        showWarning.value = false;
+        localStorage.setItem(elemHash, true);
+      };
+
+      const validationCookie = PWA.Vue.computed(() => {
+        return (content && content != "") && !localStorage.getItem('warning_d41d8cd98f00b204e9800998ecf8427e') && showWarning.value;
+      });
+
+      const goTo = (href) => {
+        if (href && href != "") {
+          window.location.href = href;
+        }
+      }
+
+      const goToButton = (href) => {
+        goTo(href);
+      }
+
+      return {
+        content,
+        actionClose,
+        validationCookie,
+        goTo,
+        goToButton
+      }
+    }
+  }).mount('#phidias_warning_cf7ae2cfdaae1e01b02a02aeba4a589a')
+</script>
+
+<style>
+  .phidias_warning {
+    margin: var(--align);
+    max-width: 600px;
+    display: flex;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    background: var(--phidias-warning-bg);
+    border: var(--phidias-warning-border);
+    color: var(--phidias-warning-color);
+    border-width: 0px;
+    align-items: center;
+  }
+
+  .phidias_warning__left {
+    gap: 10px;
+    flex-grow: 1;
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    text-align: left;
+  }
+
+  .phidias_warning--link {
+    cursor: pointer;
+  }
+
+  .icon-left {
+    font-size: 35px;
+  }
+
+  .icon-close {
+    margin: 8px;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+
+  .phidias_warning--success {
+    --phidias-warning-bg: #e4f8f0;
+    --phidias-warning-border: solid #1ea97c;
+    --phidias-warning-color: #1ea97c;
+  }
+  .phidias_warning--info {
+    --phidias-warning-bg: #e9e9ff;
+    --phidias-warning-border: solid #696cff;
+    --phidias-warning-color: #696cff;
+  }
+  .phidias_warning--warn {
+    --phidias-warning-bg: #fff2e2;
+    --phidias-warning-border: solid #cc8925;
+    --phidias-warning-color: #cc8925;
+  }
+  .phidias_warning--error {
+    --phidias-warning-bg: #ffe7e6;
+    --phidias-warning-color: #ff5757;
+    border: none !important;
+  }
+
+  .phidias_warning button{
+    background: transparent;
+    color: var(--phidias-warning-color);
+    border: 1px solid var(--phidias-warning-color);
+  }
+
+  .phidias_warning_align--center {
+    --align: auto;
+  }
+  .phidias_warning_align--left {
+    --align: 0;
+  }
+</style>
+
+
+    <div class="authorization_error">
+                    <h1>Por favor, introduzca los siguientes datos:</h1>
+            </div>
+
+            <script>
+                function checksubmit(event) {
+                    event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
+                    window.location.href = "tu_pagina.html"; // Redirige a la página deseada
+                }
+            </script>
+            
+            <form method="post" action="" autocomplete="off" onsubmit="return checksubmit(event)">
+                <div class="field">
+                    <label>Nombre y apellidos:</label>
+                    <input type="text" name="nombre" id="nombre" />
+                </div>
+                <br><br>
+                <input type="submit" value="Siguiente" class="primaryButton" />
+            </form>
+            
+    </div>
+      <div id="phidias_box_footer">
+</div>
+
+<script>
+createPhidiasApp({
+  components: {
+    UiDialog: PWA.ui.UiDialog,
+    UiItem: PWA.ui.UiItem,
+  }
+}).mount('#phidias_box_footer')
+</script>
+
+
+
+    </div>
+    <div id="phidias_box_image"></div>
+  </div>
+</body>
+
+</html>
